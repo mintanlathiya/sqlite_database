@@ -7,10 +7,16 @@ class UserModal {
     required this.userName,
   });
 
+  // factory UserModal.fromMap(Map<String, dynamic> json) {
+  //   return UserModal(
+  //     id: json['id'] != null ? json['id'] as int : null,
+  //     userName: json['userName'] as String,
+  //   );
+  // }
   factory UserModal.fromMap(Map<String, dynamic> json) {
     return UserModal(
-      id: json['id'] != null ? json['id'] as int : null,
-      userName: json['userName'] as String,
+      id: json['id'],
+      userName: json['userName'],
     );
   }
   // Map<String, dynamic> toJson() {
