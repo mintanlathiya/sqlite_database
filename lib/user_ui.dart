@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:sqlite_database/local_database.dart';
+import 'package:sqlite_database/user_modal.dart';
 
 class UserUi extends StatefulWidget {
   const UserUi({super.key});
@@ -18,7 +20,12 @@ class _UserUiState extends State<UserUi> {
             controller: txtuserNameContoller,
           ),
           MaterialButton(
-            onPressed: () {},
+            onPressed: () async{
+             await LocalDatabase.insertData(User(userName: txtuserNameContoller.text));
+             setState(() {
+
+             });
+            },
             child: const Text('Submit'),
           ),
         ],
