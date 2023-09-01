@@ -14,21 +14,21 @@ class _UserUiState extends State<UserUi> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Column(
-        children: [
-          TextField(
-            controller: txtuserNameContoller,
-          ),
-          MaterialButton(
-            onPressed: () async{
-             await LocalDatabase.insertData(User(userName: txtuserNameContoller.text));
-             setState(() {
-
-             });
-            },
-            child: const Text('Submit'),
-          ),
-        ],
+      body: SafeArea(
+        child: Column(
+          children: [
+            TextField(
+              controller: txtuserNameContoller,
+            ),
+            MaterialButton(
+              onPressed: () async {
+                await LocalDatabase.insertData(
+                    User(userName: txtuserNameContoller.text));
+              },
+              child: const Text('Submit'),
+            ),
+          ],
+        ),
       ),
     );
   }
