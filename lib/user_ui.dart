@@ -11,6 +11,15 @@ class UserUi extends StatefulWidget {
 
 class _UserUiState extends State<UserUi> {
   TextEditingController txtuserNameContoller = TextEditingController();
+  late Future<List<User>> futureUserData;
+  bool isUpdate = false;
+  int selectedId = 0;
+  @override
+  void initState() {
+    futureUserData = LocalDatabase.selectData();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,12 +30,64 @@ class _UserUiState extends State<UserUi> {
               controller: txtuserNameContoller,
             ),
             MaterialButton(
-              onPressed: () async {
-                await LocalDatabase.insertData(
-                    User(userName: txtuserNameContoller.text));
-              },
-              child: const Text('Submit'),
+              onPressed: isUpdate
+                  ? () async {
+                      User obj = User(
+                          userName: txtuserNameContoller.text, id: selectedId);
+                      await LocalDatabase.updateData(obj);
+                      futureUserData = LocalDatabase.selectData();
+                      isUpdate = false;
+
+                      setState(() {});
+                    }
+                  : () async {
+                      await LocalDatabase.insertData(
+                          User(userName: txtuserNameContoller.text));
+                      futureUserData = LocalDatabase.selectData();
+                      setState(() {});
+                    },
+              child: Text(isUpdate ? 'update' : 'Submit'),
             ),
+            const SizedBox(height: 10),
+            FutureBuilder(
+              future: futureUserData,
+              builder: (context, snapshot) {
+                if (snapshot.hasData && snapshot.data!.isNotEmpty) {
+                  return Expanded(
+                    child: ListView.builder(
+                      itemCount: snapshot.data!.length,
+                      itemBuilder: (context, index) {
+                        return GestureDetector(
+                          onTap: () {
+                            isUpdate = true;
+                            txtuserNameContoller.text =
+                                snapshot.data![index].userName;
+                            selectedId = snapshot.data![index].id!;
+
+                            setState(() {});
+                          },
+                          child: Dismissible(
+                            key: UniqueKey(),
+                            onDismissed: (direction) async {
+                              await LocalDatabase.deleteData(
+                                  snapshot.data![index].id!);
+                              futureUserData = LocalDatabase.selectData();
+                              isUpdate = false;
+                              setState(() {});
+                            },
+                            child: ListTile(
+                              title: Text(snapshot.data![index].userName),
+                            ),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                } else {
+                  return const Text('there is no data');
+                }
+              },
+            )
           ],
         ),
       ),
